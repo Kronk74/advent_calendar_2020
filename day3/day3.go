@@ -17,16 +17,16 @@ func fillArray(input []string, mappy *[][]string) {
 func getTree(mappy [][]string, right int, down int) int {
 
 	nbr := 0
-	j := right
+	j := 0
 
-	for i := down + 1; i < len(mappy); i = i + down {
-		j = j + right
+	for i := 0; i < len(mappy); i = i + down {
 		if j >= len(mappy[i]) {
 			j = j - len(mappy[i])
 		}
 		if mappy[i][j] == "#" {
 			nbr++
 		}
+		j = j + right
 	}
 
 	return nbr
