@@ -49,9 +49,26 @@ func getBagInfos(line string) bag {
 	return bag
 }
 
+func unique(s []string) []string {
+	unique := make(map[string]bool, len(s))
+	us := make([]string, len(unique))
+	for _, elem := range s {
+		if len(elem) != 0 {
+			if !unique[elem] {
+				us = append(us, elem)
+				unique[elem] = true
+			}
+		}
+	}
+
+	return us
+
+}
+
 func part1(input string) int {
 	result := 0
 	var bags []bag
+	var baggy []string
 
 	bags = getListBags(input)
 
@@ -65,20 +82,39 @@ func part1(input string) int {
 	for scanner.Scan() {
 		testBag := getBagInfos(scanner.Text())
 
-		//for name, count := range testBag.contain {
-		//}
-		if testBag.contain["shiny gold bags"] > 0 || testBag.contain["shiny gold bag"] > 0 {
-			fmt.Println(testBag.name)
-			bags = append(bags, testBag)
-			result++
+		//Test is a bag contain one or more shiny gold bag
+		if testBag.contain["shiny gold bag"] > 0 || testBag.contain["shiny gold bag"+"s"] > 0 {
+			baggy = append(baggy, testBag.name)
 		}
+	}
+	var tempBag1 []string
+	var tempBag2 []string
+	var tb2 string
+	tempBag1 = append(tempBag1, baggy...)
+	for len(tempBag1) > 0 {
+		for _, b := range bags {
+			for _, tb1 := range tempBag1 {
+				retb := regexp.MustCompile(`s$`)
+				if retb.Match([]byte(tb1)) {
+					tb2 = tb1[:len(tb1)-1]
+				} else {
+					tb2 = tb1 + "s"
+				}
+				if b.contain[tb1] > 0 || b.contain[tb2] > 0 {
+					tempBag2 = append(tempBag2, b.name)
+				}
 
-		//for k, v := range bags {
-		//	fmt.Println(k)
-		//	fmt.Println(v)
-		//}
+			}
+		}
+		tempBag1 = tempBag1[:0]
+		tempBag1 = append(tempBag1, tempBag2...)
+		baggy = append(baggy, tempBag2...)
+		tempBag2 = tempBag2[:0]
+
 	}
 
+	baggy = unique(baggy)
+	result = len(baggy)
 	file.Close()
 	return result
 }
